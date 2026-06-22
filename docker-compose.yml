@@ -23,10 +23,13 @@ services:
       postgres:
         condition: service_healthy
     entrypoint: ["/bin/sh", "-c"]
-    command: >
-      PGPASSWORD=postgres
-      psql "postgresql://postgres@postgres:5432/rag" -v ON_ERROR_STOP=1
-      -c "CREATE EXTENSION IF NOT EXISTS vector;"
+    # Single-element list so the whole script is passed as ONE argument to `sh -c`.
+    # Otherwise, the command would be split on spaces and the `-c` flag would be lost.
+    command:
+      - >
+        PGPASSWORD=postgres
+        psql "postgresql://postgres@postgres:5432/rag" -v ON_ERROR_STOP=1
+        -c "CREATE EXTENSION IF NOT EXISTS vector;"
     restart: "no"
 
 volumes:
